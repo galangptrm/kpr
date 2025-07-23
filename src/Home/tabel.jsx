@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function TabelCicilan({results={}}){
@@ -15,9 +15,10 @@ export default function TabelCicilan({results={}}){
     // console.log('Data result', results.data);
 
     return (
-        <table className="table table-bordered table-striped">
-            <thead className="sticky">
-                <tr>
+        <>
+        <table className="table table-bordered table-striped table-hover table-responsive">
+            <thead className="sticky-top">
+                <tr className="table-dark">
                     <th scope="col">Bulan Ke</th>
                     <th scope="col">Bunga</th>
                     <th scope="col">Angsuran</th>
@@ -28,7 +29,7 @@ export default function TabelCicilan({results={}}){
             </thead>
             <tbody>
                 {results.data && results.data.map((item, index) => (
-                    <tr key={`bulan-${index}`}>
+                    <tr key={`bulan-${index}`} className="text-end font-monospace">
                         <th scope="row">{item.bulan}</th>
                         <td>{item.bunga_tahunan} %</td>
                         <td>{formatRupiah(item.angsuran)}</td>
@@ -38,6 +39,18 @@ export default function TabelCicilan({results={}}){
                     </tr>
                 ))}
             </tbody>
+            {results.total_angsuran && 
+            <tfoot className="sticky-bottom">
+                <tr className="text-end table-dark font-monospace">
+                    <th colSpan={2} scope="row">TOTAL</th>
+                    <td scope="row">{formatRupiah(results.total_angsuran)}</td>
+                    <td scope="row">{formatRupiah(results.total_pokok)}</td>
+                    <td scope="row">{formatRupiah(results.total_margin)}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+            }
         </table>
+        </>
     )
 }

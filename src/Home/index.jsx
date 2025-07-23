@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
+import Header from "./header";
+import Footer from "./footer";
 import TabelCicilan from "./tabel"
+import Grafik from "./grafik"
 
 const MortgageCounterApp = () => {
     const [housePrice, setHousePrice] = useState(0);
@@ -43,13 +46,13 @@ const MortgageCounterApp = () => {
 
     const validate = () => {
         const newErrors = {};
-        if (housePrice <= 0) newErrors.housePrice = "House price must be greater than 0.";
-        if (downPayment < 0) newErrors.downPayment = "Down payment cannot be negative.";
-        if (downPayment >= housePrice) newErrors.downPayment = "Down payment must be less than house price.";
-        if (years < 1 || years > 40) newErrors.years = "Year must be between 1 and 40.";
+        if (housePrice <= 0) newErrors.housePrice = "Harga rumah harus di atas 0.";
+        if (downPayment < 0) newErrors.downPayment = "Down payment tidak bisa bernilai negatif.";
+        if (downPayment >= housePrice) newErrors.downPayment = "Down payment harus lebih rendah dari harga rumah.";
+        if (years < 1 || years > 40) newErrors.years = "Tahun antara 1 sampai 40.";
         interestRates.forEach((rate, idx) => {
         if (rate.rate === "" || isNaN(rate.rate) || rate.rate < 0) {
-            newErrors[`rate_${idx}`] = `Interest for year ${idx + 1} must be a non-negative number.`;
+            newErrors[`rate_${idx}`] = `Bunga di tahun ke-${idx + 1} tidak boleh bernilai negatif.`;
         }
         });
         setErrors(newErrors);
@@ -69,9 +72,7 @@ const MortgageCounterApp = () => {
     
     const handleCount = () => {
         if (!validate()) return;
-
         countMortgage(housePrice, downPayment, years, interestRates)
-        document.getElementById("result-frame").src = "about:blank";
     };
 
     const countMortgage = (price, dp, year, rates) => {
@@ -89,7 +90,7 @@ const MortgageCounterApp = () => {
                 //=PMT(4.99%/12, $C$4, -$C$2) - Total angsuran bulanan
                 let monthlyRate = (parseFloat(rates[i].rate)/100/12)
                 let porsiMargin = sisaPinjaman * monthlyRate
-                let angsuran = PMT(monthlyRate, monthTotal-(i*12), sisaPinjamanTahunTerakhir).toFixed(0)
+                let angsuran = PMT(monthlyRate, monthTotal-(i*12), sisaPinjamanTahunTerakhir)
                 let porsiPokok = angsuran-porsiMargin
                 let sisa = sisaPinjaman-porsiPokok
                 sisaPinjaman = sisa
@@ -123,13 +124,6 @@ const MortgageCounterApp = () => {
         }
 
         setResults(result)
-
-        // console.log('KPR Result', results);
-        // console.log('Total', {
-        //     "Total pokok" : totalPokok,
-        //     "Total angsuran" : totalAngsuran,
-        //     "Total margin" : totalMargin
-        // });
     }
 
     function PMT(rate, nper, pv) {
@@ -138,118 +132,138 @@ const MortgageCounterApp = () => {
     }
       
     return (
+        <>
+        <Header/>
         <div className="container py-4">
-        <header className="mb-4 sticky-top bg-white py-3 shadow-sm">
-            <h1 className="text-center">Mortgage Counter</h1>
-        </header>
-
         <main>
             <form className="mb-4">
-            <div className="row g-3 mb-3">
-                <div className="col-md-5">
-                    <label className="form-label">House Price</label>
+            <div className="row g-3 my-3">
+                <div className="col-md-5 text-start">
+                    <label className="form-label">Harga Rumah</label>
                     <div className="input-group">
                         <span className="input-group-text" id="basic-addon3">Rp.</span>
-                        <input type="number" className={`form-control ${errors.housePrice ? "is-invalid" : ""}`} value={housePrice} onChange={e => setHousePrice(Number(e.target.value))} />
+                        <input type="number" className={`form-control ${errors.housePrice ? "is-invalid" : ""}`} 
+                        value={housePrice === 0 ? "" : housePrice}
+                        onChange={e => {
+                            const value = e.target.value
+                            setHousePrice(value === "" ? 0 : Number(value))
+                        }} 
+                        placeholder="xxx.xxx.xxx"/>
                         {errors.housePrice && <div className="invalid-feedback">{errors.housePrice}</div>}
                     </div>
                 </div>
-                <div className="col-md-5">
-                    <label className="form-label">Down Payment</label>
+                <div className="col-md-5 text-start">
+                    <label className="form-label">Uang Muka</label>
                     <div className="input-group">
                         <span className="input-group-text" id="basic-addon3">Rp.</span>
-                        <input type="number" className={`form-control ${errors.downPayment ? "is-invalid" : ""}`} value={downPayment} onChange={e => setDownPayment(Number(e.target.value))} />
+                        <input type="number" className={`form-control ${errors.downPayment ? "is-invalid" : ""}`} 
+                        value={downPayment === 0 ? "" : downPayment} 
+                        onChange={e => {
+                            const value = e.target.value
+                            setDownPayment(value === "" ? 0 : Number(value))
+                        }} 
+                        placeholder="xxx.xxx.xxx"/>
                         {errors.downPayment && <div className="invalid-feedback">{errors.downPayment}</div>}
                     </div>
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-2 text-start">
                     <label className="form-label">Lama Tenor</label>
                     <div className="input-group">
-                        <input type="number" min="1" max="40" className={`form-control ${errors.years ? "is-invalid" : ""}`} value={years} onChange={e => setYears(parseInt(e.target.value) || 1)} />
+                        <select className={`form-select form-select-sm form-control ${errors.years ? "is-invalid" : ""}`} value={years} onChange={e => setYears(parseInt(e.target.value) || 1)} aria-label="year select">
+                            {Array.from({ length: 40 }, (_, index) => (
+                            <option key={`year-${index+1}`} value={index+1}>{index+1}</option>
+                            ))}
+                        </select>
+                        {/* <input type="number" min="1" max="40" className={`form-control ${errors.years ? "is-invalid" : ""}`} value={years} onChange={e => setYears(parseInt(e.target.value) || 1)} /> */}
                         {errors.years && <div className="invalid-feedback">{errors.years}</div>}
                         <span className="input-group-text" id="basic-addon3">Tahun</span>
                     </div>
-                    <div className="form-text text-start fw-lighter" id="basic-addon4">Minimal 1 Tahun <br /> Maksimal 40 tahun</div>
+                    {/* <div className="form-text text-start fw-lighter" id="basic-addon4">Minimal 1 Tahun <br /> Maksimal 40 tahun</div> */}
                 </div>
             </div>
             <div className="row">
-                <div className="col-sm-12 col-md-3">
+                <div className="col-12">
                     <div className="row">
-                        <label htmlFor="basic-url" className="form-label text-start">Interest Rate (%)</label>
+                        <label htmlFor="basic-url" className="form-label text-start">Bunga Pertahun (%)</label>
                     </div>
-                    <div className="row">
+                    <div className="row overflow-auto" style={{maxHeight: "25vh"}}>
                         {interestRates.map((input, index) => (
-                        <div className="g-3 align-items-end" key={index}>
-                            <div className="input-group">
-                                <span className="input-group-text" id="basic-addon3">Tahun ke-{index + 1}</span>
-                                <input type="number" className={`form-control ${errors[`rate_${index}`] ? "is-invalid" : ""}`} value={input.rate} onChange={e => handleRateChange(index, "rate", e.target.value)}/>
-                                {errors[`rate_${index}`] && <div className="invalid-feedback">{errors[`rate_${index}`]}</div>}
-                                <span className="input-group-text" id="basic-addon3">%</span>
-                                
-                                {index === interestRates.length - 1 && interestRates.length < years && (
-                                    <button type="button" className="btn btn-md btn-success" onClick={() => handleAddRate(index)}>+</button>
-                                )}
-                                {interestRates.length > 1 && (
-                                    <button type="button" className="btn btn-md btn-danger" onClick={() => handleRemoveRate(index)}>−</button>
-                                )}
-                            </div>
-                            {/* <div className="col-auto">
-                                
-                            </div> */}
-                            {index === interestRates.length - 1 && index < years - 1 && (
-                            <div className="col-md text-start">
-                                <div className="form-check form-switch">
-                                    <input className="form-check-input" type="checkbox" checked={input.applyToRemaining}
-                                    onChange={e => handleRateChange(index, "applyToRemaining", e.target.checked)}
-                                    id={`applyCheck${index}`}
-                                    disabled={!input.rate}/>
-                                    <label className="form-check-label" htmlFor={`applyToRemaining${index}`}>
-                                    Apply to remaining years
-                                    </label>
+                            <div className="g-3 col-lg-3 col-md-4 col-sm-12 align-items-end" key={index}>
+                                <div className="input-group">
+                                    <span className="input-group-text" id="basic-addon3">{index + 1}</span>
+                                    <input placeholder={`Tahun ke-${index+1}`} type="number" className={`form-control ${errors[`rate_${index}`] ? "is-invalid" : ""}`} value={input.rate} onChange={e => handleRateChange(index, "rate", e.target.value)}/>
+                                    {errors[`rate_${index}`] && <div className="invalid-feedback">{errors[`rate_${index}`]}</div>}
+                                    <span className="input-group-text" id="basic-addon3">%</span>
+                                    
+                                    {index === interestRates.length - 1 && interestRates.length < years && (
+                                        <button type="button" className="btn btn-md btn-success" onClick={() => handleAddRate(index)}>+</button>
+                                    )}
+                                    {interestRates.length > 1 && (
+                                        <button type="button" className="btn btn-md btn-danger" onClick={() => handleRemoveRate(index)}>−</button>
+                                    )}
                                 </div>
+                                {/* <div className="col-auto">
+                                    
+                                </div> */}
+                                {index === interestRates.length - 1 && index < years - 1 && (
+                                <div className="col-md text-start">
+                                    <div className="form-check form-switch form-lg">
+                                        <input className="form-check-input" type="checkbox" checked={input.applyToRemaining}
+                                        onChange={e => handleRateChange(index, "applyToRemaining", e.target.checked)}
+                                        id={`applyCheck${index}`}
+                                        disabled={!input.rate}/>
+                                        <label className="form-check-label" htmlFor={`applyToRemaining${index}`}>
+                                            Samakan bunga di tahun-tahun sisanya
+                                        </label>
+                                    </div>
+                                </div>
+                                )}
                             </div>
-                            )}
-                        </div>
                         ))}
-                        <div className="mt-3 d-flex flex-wrap gap-2">
-                            <button type="button" className="btn btn-primary" onClick={handleCount}>Count</button>
-                            <button type="button" className="btn btn-secondary" onClick={handleReset}>Reset Interest Inputs</button>
-                        </div>
                     </div>
                 </div>
-                <div className="col-sm-12 col-md-9">
+                <div className="col-12">
+                    <div className="mt-3 d-flex flex-wrap gap-2">
+                        <button type="button" className="btn btn-primary btn-lg" onClick={handleCount}>Hitung</button>
+                        <button type="button" className="btn btn-secondary btn-lg" onClick={handleReset}>Hapus Bunga</button>
+                    </div>
+                </div>
+            </div>
+            {results.data && 
+            <div className="row mt-3">
+                <div className="col-12">
                     <div className="row">
-                        <label className="form-label text-start">Tabel Cicilan</label>
+                        <label className="form-label text-start">Grafik Cicilan</label>
+                        <Grafik results={results}/>
                     </div>
                     <div className="row">
-                        <div className="col-12">
+                        <label className="form-label text-start">Tabel Cicilan</label>
+                        <div className="col-12 vh-100 overflow-auto">
                             <TabelCicilan results={results}/>
                         </div>
                     </div>
                 </div>
             </div>
+            }
             </form>
         </main>
-
-        <footer className="mt-4 text-center">
-            <small>&copy; 2025 Mortgage Counter</small>
-        </footer>
-
         <Modal show={showResetModal} onHide={() => setShowResetModal(false)}>
             <Modal.Header closeButton>
             <Modal.Title>Confirm Reset</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Are you sure you want to reset the interest inputs to year 1?</Modal.Body>
+            <Modal.Body>Anda yakin ingin menghapus semua bunga hingga tahun pertama?</Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowResetModal(false)}>
-                No
+                Tidak
             </Button>
             <Button variant="danger" onClick={confirmReset}>
-                Okay
+                Iya
             </Button>
             </Modal.Footer>
         </Modal>
         </div>
+        <Footer/>
+        </>
     );
 };
 
