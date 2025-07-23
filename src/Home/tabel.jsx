@@ -1,5 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import * as XLSX from "xlsx";
 
 export default function TabelCicilan({results={}}){
 
@@ -12,10 +13,33 @@ export default function TabelCicilan({results={}}){
         }).format(number);
     };
 
-    // console.log('Data result', results.data);
+    const handleDownloadExcel = (e) => {
+        e.preventDefault()
+        const worksheetData = results.data.map(item => ({
+            Bulan: item.bulan,
+            "Bunga Tahunan": item.bunga_tahunan + "%",
+            Angsuran: item.angsuran,
+            Pokok: item.pokok,
+            Margin: item.margin,
+            "Sisa Pokok": item.sisa,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Cicilan");
+
+        XLSX.writeFile(workbook, "tabel_cicilan.xlsx");
+    };
 
     return (
         <>
+        <button type="button" className="btn btn-success btn-xs mb-3 text-start" onClick={handleDownloadExcel}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-file-earmark-excel" viewBox="0 0 16 16">
+                <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+            </svg>
+            Download Excel
+        </button>
         <table className="table table-bordered table-striped table-hover table-responsive">
             <thead className="sticky-top">
                 <tr className="table-dark">
