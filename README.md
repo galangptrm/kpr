@@ -6,7 +6,7 @@ This is a simple mortgage calculator built with React, designed for users in Ind
 
 ## Features
 
-* ⭐ Input house price, down payment, and loan term (5–40 years)
+* ⭐ Input house price, down payment, and loan term (1–40 years)
 * ⭐ Add yearly interest rates with "Apply to remaining years" toggle
 * ⭐ Live form validation and error handling
 * ⭐ Sticky header for easy navigation
@@ -21,6 +21,7 @@ This is a simple mortgage calculator built with React, designed for users in Ind
 * React 18+
 * Bootstrap 5
 * React-Bootstrap (Modal UI)
+* Recharts 3.1.0 (Graph)
 * Vite (for fast development/build)
 
 ---
@@ -45,24 +46,16 @@ npm run dev
 npm run build
 ```
 
----
-
-## Project Structure
-
-* `MortgageCounterApp.jsx`: Main app component with form logic
-* `index.html`: Entry page with iframe display
-* `formatRupiah.js`: Helper to format integers to Indonesian currency
-
----
-
 ## Example Usage
 
 * Enter house price: `869000000`
 * Enter down payment: `100000000`
 * Set loan term: `25`
-* Enter first year interest: `4.99`
-* Click "Apply to remaining years"
-* Click **Count** to generate output
+* Enter first year interest: (ex `4.99`)
+* Enter another year(s) interest: (ex `13.5`)
+* Click "Samakan bunga di tahun-tahun sisanya"
+* Click **Hitung** to generate output
+* The App will output Mortgage Table and Simple Graph
 
 ---
 
