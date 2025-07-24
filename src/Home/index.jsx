@@ -50,6 +50,8 @@ const MortgageCounterApp = () => {
         if (downPayment < 0) newErrors.downPayment = "Down payment tidak bisa bernilai negatif.";
         if (downPayment >= housePrice) newErrors.downPayment = "Down payment harus lebih rendah dari harga rumah.";
         if (years < 1 || years > 40) newErrors.years = "Tahun antara 1 sampai 40.";
+        if (interestRates.length < years) newErrors[`rate_${interestRates.length-1}`] = `Jumlah input bunga kurang dari ${years} tahun.`;
+
         interestRates.forEach((rate, idx) => {
         if (rate.rate === "" || isNaN(rate.rate) || rate.rate < 0) {
             newErrors[`rate_${idx}`] = `Bunga di tahun ke-${idx + 1} tidak boleh bernilai negatif.`;
@@ -117,6 +119,9 @@ const MortgageCounterApp = () => {
         }
 
         let result = {
+            "harga" : price,
+            "dp" : dp,
+            "total_tahun" : year,
             "total_pokok" : totalPokok,
             "total_angsuran" : totalAngsuran,
             "total_margin" : totalMargin,
@@ -174,11 +179,9 @@ const MortgageCounterApp = () => {
                             <option key={`year-${index+1}`} value={index+1}>{index+1}</option>
                             ))}
                         </select>
-                        {/* <input type="number" min="1" max="40" className={`form-control ${errors.years ? "is-invalid" : ""}`} value={years} onChange={e => setYears(parseInt(e.target.value) || 1)} /> */}
                         {errors.years && <div className="invalid-feedback">{errors.years}</div>}
                         <span className="input-group-text" id="basic-addon3">Tahun</span>
                     </div>
-                    {/* <div className="form-text text-start fw-lighter" id="basic-addon4">Minimal 1 Tahun <br /> Maksimal 40 tahun</div> */}
                 </div>
             </div>
             <div className="row">
@@ -202,9 +205,6 @@ const MortgageCounterApp = () => {
                                         <button type="button" className="btn btn-md btn-danger" onClick={() => handleRemoveRate(index)}>−</button>
                                     )}
                                 </div>
-                                {/* <div className="col-auto">
-                                    
-                                </div> */}
                                 {index === interestRates.length - 1 && index < years - 1 && (
                                 <div className="col-md text-start">
                                     <div className="form-check form-switch form-lg">
@@ -232,16 +232,8 @@ const MortgageCounterApp = () => {
             {results.data && 
             <div className="row mt-3">
                 <div className="col-12">
-                    <div className="row">
-                        <label className="form-label text-start">Grafik Cicilan</label>
-                        <Grafik results={results}/>
-                    </div>
-                    <div className="row">
-                        <label className="form-label text-start">Tabel Cicilan</label>
-                        <div className="col-12 vh-100 overflow-auto">
-                            <TabelCicilan results={results}/>
-                        </div>
-                    </div>
+                    <Grafik results={results}/>
+                    <TabelCicilan results={results}/>
                 </div>
             </div>
             }

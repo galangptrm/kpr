@@ -22,18 +22,21 @@ export default function Grafik({results={}}){
 
     return (
         <>
-            {results.data && 
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={results.data}>
-                        <XAxis dataKey="bulan"/>
-                        <YAxis hide />
-                        <Tooltip content={<CustomTooltip/>}/>
-                        <Legend />
-                        <Bar dataKey="pokok" stackId="a" fill="#82ca9d" name="Pokok" />
-                        <Bar dataKey="margin" stackId="a" fill="#8884d8" name="Margin" />
-                    </BarChart>
-                </ResponsiveContainer>
-            }
+            <div className="row">
+                <label className="form-label text-start">Grafik Cicilan</label>
+                {results.data && 
+                    <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={results.data}>
+                            <XAxis dataKey="bulan"/>
+                            <YAxis hide />
+                            <Tooltip content={<CustomTooltip/>}/>
+                            <Legend />
+                            <Bar dataKey="pokok" stackId="a" fill="#82ca9d" name="Pokok" />
+                            <Bar dataKey="margin" stackId="a" fill="#8884d8" name="Bunga" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                }
+            </div>
         </>
     )
 }
@@ -55,7 +58,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         <strong>Bulan ke - {label}</strong>
         <br />
         <span style={{color:"#82ca9d"}}>Pokok: <b>{formatRupiah(payload[0].value)}</b></span><br />
-        <span style={{color:"#8884d8"}}>Margin: <b>{formatRupiah(payload[1].value)}</b></span>
+        <span style={{color:"#8884d8"}}>Bunga: <b>{formatRupiah(payload[1].value)}</b></span>
       </div>
     );
 }
