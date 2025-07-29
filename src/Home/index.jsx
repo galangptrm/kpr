@@ -189,9 +189,10 @@ const MortgageCounterApp = () => {
                     <div className="row">
                         <label htmlFor="basic-url" className="form-label text-start">Bunga Pertahun (%)</label>
                     </div>
-                    <div className="row overflow-auto" style={{maxHeight: "25vh"}}>
+                    <div className="row overflow-auto border border-primary" style={{maxHeight: "25vh"}}>
                         {interestRates.map((input, index) => (
-                            <div className="g-3 col-lg-3 col-md-4 col-sm-12 align-items-end" key={index}>
+                            <>
+                            <div className={`g-3 col-lg-3 col-md-4 col-sm-12 align-items-end ${index == years-1 ? 'mb-3':''}`} key={index}>
                                 <div className="input-group">
                                     <span className="input-group-text" id="basic-addon3">{index + 1}</span>
                                     <input placeholder={`Tahun ke-${index+1}`} type="number" className={`form-control ${errors[`rate_${index}`] ? "is-invalid" : ""}`} value={input.rate} onChange={e => handleRateChange(index, "rate", e.target.value)}/>
@@ -205,22 +206,26 @@ const MortgageCounterApp = () => {
                                         <button type="button" className="btn btn-md btn-danger" onClick={() => handleRemoveRate(index)}>−</button>
                                     )}
                                 </div>
-                                {index === interestRates.length - 1 && index < years - 1 && (
-                                <div className="col-md text-start">
-                                    <div className="form-check form-switch form-lg">
-                                        <input className="form-check-input" type="checkbox" checked={input.applyToRemaining}
-                                        onChange={e => handleRateChange(index, "applyToRemaining", e.target.checked)}
-                                        id={`applyCheck${index}`}
-                                        disabled={!input.rate}/>
-                                        <label className="form-check-label" htmlFor={`applyToRemaining${index}`}>
-                                            Samakan bunga di tahun-tahun sisanya
-                                        </label>
-                                    </div>
-                                </div>
-                                )}
                             </div>
+                            {index === interestRates.length - 1 && index < years - 1 && (
+                            <div className="my-3 col-lg-3 col-md-4 col-sm-12 align-items-end" key={`apply-remaining-${index}`}>
+                                <div className="form-check form-switch">
+                                    <input className="form-check-input check-lg" type="checkbox" checked={input.applyToRemaining}
+                                    onChange={e => handleRateChange(index, "applyToRemaining", e.target.checked)}
+                                    id={`applyCheck${index}`}
+                                    disabled={!input.rate}/>
+                                    <label className="form-check-label text-start" htmlFor={`applyToRemaining${index}`}>
+                                        Samakan bunga di tahun-tahun sisanya
+                                    </label>
+                                </div>
+                            </div>
+                            )}
+                            </>
                         ))}
                     </div>
+                </div>
+                <div className="col-12">
+                    
                 </div>
                 <div className="col-12">
                     <div className="mt-3 d-flex flex-wrap gap-2">

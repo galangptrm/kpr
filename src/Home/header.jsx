@@ -8,7 +8,7 @@ export default function Header() {
         <nav className="navbar navbar-dark bg-dark sticky-top">
             <div className="container">
                 <a className="navbar-brand" href="#">
-                KPR Counter
+                KPR Counter <small>v1</small>
                 </a>
             </div>
         </nav>

@@ -8,7 +8,7 @@ export default function Footer() {
                 <small>
                 &copy; {new Date().getFullYear()} KPR Counter App · Built using React + Bootstrap<br />
                 Released under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">MIT License</a> <br />
-                Visit my Github Pages - <a href="https://github.com/galangptrm/kpr-counter" target="_blank" rel="noopener noreferrer">Galang Putratama</a>
+                Visit my Github Pages - <a href="https://github.com/galangptrm/kpr" target="_blank" rel="noopener noreferrer">Galang</a>
                 </small>
             </div>
         </footer>
